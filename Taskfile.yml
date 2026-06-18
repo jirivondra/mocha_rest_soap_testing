@@ -1,0 +1,36 @@
+version: '3'
+
+tasks:
+  # --- Install ---
+  install:
+    desc: Install dependencies
+    cmd: npm install
+
+  # --- Tests ---
+  test:
+    desc: Run all tests
+    cmd: npm test
+
+  test-api:
+    desc: Run API tests only
+    cmd: npm run test:api
+
+  test-soap:
+    desc: Run SOAP tests only
+    cmd: npm run test:soap
+
+  test-regression:
+    desc: Run regression tests
+    cmd: npm run test:regression
+
+  test-smoke:
+    desc: Run smoke tests
+    cmd: npm run test:smoke
+
+  # --- Allure report ---
+  report:
+    desc: Run tests and generate Allure report
+    cmds:
+      - npm run test:report
+      - npm run allure:generate
+      - npm run allure:open
