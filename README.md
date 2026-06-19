@@ -14,6 +14,7 @@ Automated tests for REST API and SOAP services using the Mocha framework.
 | [typescript](https://www.typescriptlang.org) | ^6 | TypeScript support |
 | [ts-node](https://typestrong.org/ts-node) | ^10 | Running TypeScript files |
 | [allure-mocha](https://allurereport.org) | ^3 | Allure report generation |
+| [@faker-js/faker](https://fakerjs.dev) | ^10 | Dynamic test data generation |
 
 ## Installation
 

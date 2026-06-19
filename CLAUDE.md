@@ -1,12 +1,15 @@
 # Mocha API & SOAP Testing
 
-## Principy
+## Principles
 
 ### DRY (Don't Repeat Yourself)
-Veškerý kód musí dodržovat DRY princip — žádná duplicita logiky ani kódu. Opakující se části patří do helperů.
+All code must follow the DRY principle — no duplicated logic or code. Repeated parts belong in helpers.
 
 ### YAGNI (You Aren't Gonna Need It)
-Přidávej pouze kód, který je aktuálně potřeba. Nové helpery, funkce nebo abstrakce přidávej až ve chvíli, kdy je skutečně využiješ.
+Only add code that is currently needed. Add new helpers, functions, or abstractions only when they are actually used.
 
-### Žádné if podmínky v helperech
-Místo `if/else` bloků používej funkcionální přístup — `filter`, `forEach`, privátní metody. Podmínky komplikují čitelnost a testovatelnost.
+### No if conditions in helpers
+Instead of `if/else` blocks, use a functional approach — `filter`, `forEach`, private methods. Conditions reduce readability and testability.
+
+### Static values belong in variables
+All static texts and values in tests must be stored in named variables — no hardcoded strings directly in code. URLs belong in a `url` object, test data in a `testData` object.
