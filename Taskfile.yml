@@ -1,36 +1,76 @@
 version: '3'
 
 tasks:
-  # --- Install ---
-  install:
-    desc: Install dependencies
-    cmd: npm install
+    # --- Install ---
+    install:
+        aliases: [i]
+        desc: Install dependencies
+        cmd: npm install
 
-  # --- Tests ---
-  test:
-    desc: Run all tests
-    cmd: npm test
+    # --- Build ---
+    build:
+        aliases: [b]
+        desc: Compile TypeScript
+        cmd: npx tsc
 
-  test-api:
-    desc: Run API tests only
-    cmd: npm run test:api
+    # --- Tests ---
+    test:
+        aliases: [t]
+        desc: Run all tests
+        deps: [build]
+        cmd: npx mocha
 
-  test-soap:
-    desc: Run SOAP tests only
-    cmd: npm run test:soap
+    test-api:
+        aliases: [ta]
+        desc: Run API tests only
+        deps: [build]
+        cmd: npx mocha --spec 'dist/test/api/**/*.spec.js'
 
-  test-regression:
-    desc: Run regression tests
-    cmd: npm run test:regression
+    test-soap:
+        aliases: [tsoap]
+        desc: Run SOAP tests only
+        deps: [build]
+        cmd: npx mocha --spec 'dist/test/soap/**/*.spec.js'
 
-  test-smoke:
-    desc: Run smoke tests
-    cmd: npm run test:smoke
+    test-regression:
+        aliases: [tr]
+        desc: Run regression tests
+        deps: [build]
+        cmd: npx mocha --spec 'dist/test/api/regression/**/*.spec.js'
 
-  # --- Allure report ---
-  report:
-    desc: Run tests and generate Allure report
-    cmds:
-      - npm run test:report
-      - npm run allure:generate
-      - npm run allure:open
+    test-smoke:
+        aliases: [tsm]
+        desc: Run smoke tests
+        deps: [build]
+        cmd: npx mocha --spec 'dist/test/api/smoke/**/*.spec.js'
+
+    # --- Code quality ---
+    lint:
+        aliases: [l]
+        desc: Run ESLint
+        cmd: npx eslint .
+
+    lint-fix:
+        aliases: [lf]
+        desc: Run ESLint with auto-fix
+        cmd: npx eslint . --fix
+
+    format:
+        aliases: [fmt]
+        desc: Format code with Prettier
+        cmd: npx prettier --write .
+
+    format-check:
+        aliases: [fc]
+        desc: Check formatting with Prettier (CI)
+        cmd: npx prettier --check .
+
+    # --- Allure report ---
+    report:
+        aliases: [r]
+        desc: Run tests and generate Allure report
+        cmds:
+            - task: build
+            - cmd: npx mocha --reporter allure-mocha --reporter-option resultsDir=allure-results
+            - cmd: allure generate allure-results --clean -o allure-report
+            - cmd: allure open allure-report

@@ -2,50 +2,43 @@ import { get, post, del } from '../../../helpers/makeRequest';
 import { todoSchema } from '../../../schemas/todo.schema';
 import { faker } from '@faker-js/faker';
 import type { Todo } from '../../../types/todo';
-
-const url = {
-    base: '/todos',
-    byId: (id: number) => `/todos/${id}`,
-    url404: '/todos/99999',
-    url422: '/todos/:id',
-}
+import { HTTP_STATUS } from '../../../config/httpStatus';
+import { todoUrls } from '../../../config/urls';
 
 const testData = {
     title: faker.lorem.words(3),
     completed: false,
-}
+};
 
-describe('GET /todos/:id', function () {
+describe('GET /todos/{id}', function () {
     let todoId: number;
 
     before(async function () {
-        const response = await post(url.base, testData);
+        const response = await post(todoUrls.todos.base, testData);
         todoId = (response.json as Todo).id;
     });
 
     after(async function () {
-        await del(url.byId(todoId));
+        await del(todoUrls.todoById.valid(todoId));
     });
 
     it('Test for GET - 200', async function () {
-        const response = await get(url.byId(todoId))
-        response
-            .expectStatus(200)
-            .expectJsonSchema(todoSchema)
-    })
+        const response = await get(todoUrls.todoById.valid(todoId));
+        response.expectStatus(HTTP_STATUS.OK).expectJsonSchema(todoSchema);
+    });
 
     it('Test for GET - 401', async function () {
-        const response = await get(url.byId(todoId), false)
-        response.expectStatus(401)
-    })
+        const response = await get(todoUrls.todoById.valid(todoId), false);
+        response.expectStatus(HTTP_STATUS.UNAUTHORIZED);
+    });
 
     it('Test for GET - 404', async function () {
-        const response = await get(url.url404)
-        response.expectStatus(404)
-    })
+        const response = await get(todoUrls.todoById.notFound);
+        response.expectStatus(HTTP_STATUS.NOT_FOUND);
+    });
 
     it('Test for GET - 422', async function () {
-        const response = await get(url.url422)
-        response.expectStatus(422)
-    })
+        const response = await get(todoUrls.todoById.invalidId);
+        response.expectStatus(HTTP_STATUS.UNPROCESSABLE_ENTITY);
+    });
 });
