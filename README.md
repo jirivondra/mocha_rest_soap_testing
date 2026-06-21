@@ -47,11 +47,11 @@ npm run test:smoke        # smoke tests
 ### Task
 
 ```bash
-task test                 # all tests
-task test-api             # API tests only
-task test-soap            # SOAP tests only
-task test-regression      # regression tests
-task test-smoke           # smoke tests
+task test        # all tests                    (alias: t)
+task test-api    # API tests only               (alias: ta)
+task test-soap   # SOAP tests only              (alias: tsoap)
+task test-regression  # regression tests        (alias: tr)
+task test-smoke  # smoke tests                  (alias: tsm)
 ```
 
 ## Allure Report
@@ -76,10 +76,10 @@ npm run format:check  # check formatting (CI)
 ### Task
 
 ```bash
-task lint             # run ESLint
-task lint-fix         # run ESLint with auto-fix
-task format           # format code with Prettier
-task format-check     # check formatting (CI)
+task lint         # run ESLint                  (alias: l)
+task lint-fix     # run ESLint with auto-fix    (alias: lf)
+task format       # format code with Prettier   (alias: fmt)
+task format-check # check formatting (CI)       (alias: fc)
 ```
 
 ## Project Structure
