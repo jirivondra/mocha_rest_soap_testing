@@ -8,7 +8,7 @@ const testData = {
     create: { title: faker.lorem.words(3), completed: false },
 };
 
-describe('DELETE /todos/:id', function () {
+describe('DELETE /todos/{id}', function () {
     let todoId: number;
 
     beforeEach(async function () {
