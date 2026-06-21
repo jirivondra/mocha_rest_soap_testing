@@ -1,36 +1,53 @@
 version: '3'
 
 tasks:
-  # --- Install ---
-  install:
-    desc: Install dependencies
-    cmd: npm install
+    # --- Install ---
+    install:
+        desc: Install dependencies
+        cmd: npm install
 
-  # --- Tests ---
-  test:
-    desc: Run all tests
-    cmd: npm test
+    # --- Tests ---
+    test:
+        desc: Run all tests
+        cmd: npm test
 
-  test-api:
-    desc: Run API tests only
-    cmd: npm run test:api
+    test-api:
+        desc: Run API tests only
+        cmd: npm run test:api
 
-  test-soap:
-    desc: Run SOAP tests only
-    cmd: npm run test:soap
+    test-soap:
+        desc: Run SOAP tests only
+        cmd: npm run test:soap
 
-  test-regression:
-    desc: Run regression tests
-    cmd: npm run test:regression
+    test-regression:
+        desc: Run regression tests
+        cmd: npm run test:regression
 
-  test-smoke:
-    desc: Run smoke tests
-    cmd: npm run test:smoke
+    test-smoke:
+        desc: Run smoke tests
+        cmd: npm run test:smoke
 
-  # --- Allure report ---
-  report:
-    desc: Run tests and generate Allure report
-    cmds:
-      - npm run test:report
-      - npm run allure:generate
-      - npm run allure:open
+    # --- Code quality ---
+    lint:
+        desc: Run ESLint
+        cmd: npm run lint
+
+    lint-fix:
+        desc: Run ESLint with auto-fix
+        cmd: npm run lint:fix
+
+    format:
+        desc: Format code with Prettier
+        cmd: npm run format
+
+    format-check:
+        desc: Check formatting with Prettier (CI)
+        cmd: npm run format:check
+
+    # --- Allure report ---
+    report:
+        desc: Run tests and generate Allure report
+        cmds:
+            - npm run test:report
+            - npm run allure:generate
+            - npm run allure:open

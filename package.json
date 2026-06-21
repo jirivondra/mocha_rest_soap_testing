@@ -1,43 +1,51 @@
 {
-  "name": "mocha_api_soap_testing",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha --require ts-node/register 'test/**/*.spec.ts' --timeout 10000",
-    "test:api": "mocha --require ts-node/register 'test/api/**/*.spec.ts' --timeout 10000",
-    "test:soap": "mocha --require ts-node/register 'test/soap/**/*.spec.ts' --timeout 10000",
-    "test:regression": "mocha --require ts-node/register 'test/api/regression/**/*.spec.ts' --timeout 10000",
-    "test:smoke": "mocha --require ts-node/register 'test/api/smoke/**/*.spec.ts' --timeout 10000",
-    "test:report": "mocha --require ts-node/register 'test/**/*.spec.ts' --timeout 10000 --reporter allure-mocha --reporter-option resultsDir=allure-results",
-    "allure:generate": "allure generate allure-results --clean -o allure-report",
-    "allure:open": "allure open allure-report"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jirivondra/mocha_api_soap_testing.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/jirivondra/mocha_api_soap_testing/issues"
-  },
-  "homepage": "https://github.com/jirivondra/mocha_api_soap_testing#readme",
-  "devDependencies": {
-    "@faker-js/faker": "^10.5.0",
-    "@types/chai": "^5.2.3",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^25.9.3",
-    "allure-commandline": "^2.42.1",
-    "allure-mocha": "^3.10.0",
-    "axios": "^1.18.0",
-    "chai": "^6.2.2",
-    "dotenv": "^17.4.2",
-    "mocha": "^11.7.6",
-    "soap": "^1.9.3",
-    "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
-  }
+    "name": "mocha_api_soap_testing",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "tsc && mocha",
+        "test:api": "tsc && mocha --spec 'dist/test/api/**/*.spec.js'",
+        "test:soap": "tsc && mocha --spec 'dist/test/soap/**/*.spec.js'",
+        "test:regression": "tsc && mocha --spec 'dist/test/api/regression/**/*.spec.js'",
+        "test:smoke": "tsc && mocha --spec 'dist/test/api/smoke/**/*.spec.js'",
+        "test:report": "tsc && mocha --reporter allure-mocha --reporter-option resultsDir=allure-results",
+        "allure:generate": "allure generate allure-results --clean -o allure-report",
+        "allure:open": "allure open allure-report",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jirivondra/mocha_api_soap_testing.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "bugs": {
+        "url": "https://github.com/jirivondra/mocha_api_soap_testing/issues"
+    },
+    "homepage": "https://github.com/jirivondra/mocha_api_soap_testing#readme",
+    "devDependencies": {
+        "@faker-js/faker": "^10.5.0",
+        "@types/chai": "^5.2.3",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "^25.9.3",
+        "allure-commandline": "^2.42.1",
+        "allure-mocha": "^3.10.0",
+        "axios": "^1.18.0",
+        "chai": "^6.2.2",
+        "dotenv": "^17.4.2",
+        "eslint": "^10.5.0",
+        "eslint-config-prettier": "^10.1.8",
+        "mocha": "^11.7.6",
+        "prettier": "^3.8.4",
+        "soap": "^1.9.3",
+        "ts-node": "^10.9.2",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.61.1"
+    }
 }
