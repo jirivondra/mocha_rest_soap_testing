@@ -18,13 +18,13 @@ tasks:
         aliases: [t]
         desc: Run all tests
         deps: [build]
-        cmd: npx mocha
+        cmd: npx mocha --spec 'dist/test/**/*.spec.js'
 
-    test-api:
+    test-rest:
         aliases: [ta]
         desc: Run API tests only
         deps: [build]
-        cmd: npx mocha --spec 'dist/test/api/**/*.spec.js'
+        cmd: npx mocha --spec 'dist/test/rest/**/*.spec.js'
 
     test-soap:
         aliases: [tsoap]
@@ -34,15 +34,27 @@ tasks:
 
     test-regression:
         aliases: [tr]
-        desc: Run regression tests
+        desc: Run API regression tests
         deps: [build]
-        cmd: npx mocha --spec 'dist/test/api/regression/**/*.spec.js'
+        cmd: npx mocha --spec 'dist/test/rest/regression/**/*.spec.js'
+
+    test-soap-regression:
+        aliases: [tsoapr]
+        desc: Run SOAP regression tests
+        deps: [build]
+        cmd: npx mocha --spec 'dist/test/soap/regression/**/*.spec.js'
 
     test-smoke:
         aliases: [tsm]
-        desc: Run smoke tests
+        desc: Run API smoke tests
         deps: [build]
-        cmd: npx mocha --spec 'dist/test/api/smoke/**/*.spec.js'
+        cmd: npx mocha --spec 'dist/test/rest/smoke/**/*.spec.js'
+
+    test-soap-smoke:
+        aliases: [tsoapsm]
+        desc: Run SOAP smoke tests
+        deps: [build]
+        cmd: npx mocha --spec 'dist/test/soap/smoke/**/*.spec.js'
 
     # --- Code quality ---
     lint:
@@ -71,6 +83,6 @@ tasks:
         desc: Run tests and generate Allure report
         cmds:
             - task: build
-            - cmd: npx mocha --reporter allure-mocha --reporter-option resultsDir=allure-results
+            - cmd: npx mocha --spec 'dist/test/**/*.spec.js' --reporter allure-mocha --reporter-option resultsDir=allure-results
             - cmd: allure generate allure-results --clean -o allure-report
             - cmd: allure open allure-report

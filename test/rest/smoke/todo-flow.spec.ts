@@ -1,19 +1,14 @@
 import { get, post, put, del } from '../../../helpers/makeRequest';
-import { faker } from '@faker-js/faker';
 import type { Todo } from '../../../types/todo';
 import { HTTP_STATUS } from '../../../config/httpStatus';
 import { todoUrls } from '../../../config/urls';
-
-const testData = {
-    create: { title: faker.lorem.words(3), completed: false },
-    update: { title: faker.lorem.words(3), completed: true },
-};
+import { restTestData } from '../../../testData/restTestData';
 
 describe('Smoke - TODO flow', function () {
     let todoId: number;
 
     it('POST /todos - 201', async function () {
-        const response = await post(todoUrls.todos.base, testData.create);
+        const response = await post(todoUrls.todos.base, restTestData.smoke.create);
         todoId = (response.json as Todo).id;
         response.expectStatus(HTTP_STATUS.CREATED);
     });
@@ -29,7 +24,7 @@ describe('Smoke - TODO flow', function () {
     });
 
     it('PUT /todos/{id} - 200', async function () {
-        const response = await put(todoUrls.todoById.valid(todoId), testData.update);
+        const response = await put(todoUrls.todoById.valid(todoId), restTestData.smoke.update);
         response.expectStatus(HTTP_STATUS.OK);
     });
 
