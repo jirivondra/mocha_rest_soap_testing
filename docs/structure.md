@@ -72,7 +72,7 @@ End-to-end flows that verify the system works as a whole. A single test typicall
 
 ### test/soap/regression/
 
-One file per SOAP operation. Each file covers all scenarios for that operation: valid inputs, edge cases (e.g. division by zero), invalid values.
+One file per SOAP operation. Each file covers all scenarios for that operation: valid inputs, edge cases (e.g. division by zero), invalid values. Cross-operation tests that verify mathematical properties (round-trip, commutativity) live in `combined-operations.spec.ts`.
 
 ### test/soap/smoke/
 

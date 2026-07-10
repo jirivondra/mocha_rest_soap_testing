@@ -18,7 +18,7 @@ Each `it` block follows the AAA pattern in a fixed order:
 - `before` — one-time setup for the whole `describe` (e.g. create a resource that all tests will read)
 - `beforeEach` — setup that must repeat before every test (e.g. create a fresh resource when each test will destroy it)
 
-**Act** — one `await` call to `makeRequest`. A single HTTP request per test.
+**Act** — one `await` call to `makeRequest`. A single HTTP request per test. Exception: tests that verify mathematical properties across operations (round-trip, commutativity) may make multiple calls within a single `it` block when the property under test inherently requires it.
 
 **Assert** — `response.expectStatus(...)` and optionally `.expectJsonSchema(...)`, chained on the response.
 
