@@ -13,12 +13,18 @@ describe('Smoke - Chained Operations', function () {
     });
 
     it('Subtract - step 2', async function () {
-        const response = await callOperation(SOAP_OPERATIONS.SUBTRACT, { a: result, b: soapTestData.chained.subtract.b });
+        const response = await callOperation(SOAP_OPERATIONS.SUBTRACT, {
+            a: result,
+            b: soapTestData.chained.subtract.b,
+        });
         result = response.expectStatus(HTTP_STATUS.OK).getResult();
     });
 
     it('Multiply - step 3', async function () {
-        const response = await callOperation(SOAP_OPERATIONS.MULTIPLY, { a: result, b: soapTestData.chained.multiply.b });
+        const response = await callOperation(SOAP_OPERATIONS.MULTIPLY, {
+            a: result,
+            b: soapTestData.chained.multiply.b,
+        });
         result = response.expectStatus(HTTP_STATUS.OK).getResult();
     });
 

@@ -16,7 +16,7 @@ export class SoapResponse {
 
     getResult(): number {
         const match = this.body.match(/<tns:[A-Za-z]+Result>([-\d.]+)<\/tns:[A-Za-z]+Result>/);
-        expect(match, 'Result element not found in response').to.not.be.null;
+        expect(match, 'Result element not found in response').to.not.equal(null);
         return parseFloat(match![1]!);
     }
 
@@ -27,14 +27,14 @@ export class SoapResponse {
 
     expectFault(faultString: string): this {
         const match = this.body.match(/<faultstring>(.*?)<\/faultstring>/);
-        expect(match, 'Fault element not found in response').to.not.be.null;
+        expect(match, 'Fault element not found in response').to.not.equal(null);
         expect(match![1]!).to.equal(faultString);
         return this;
     }
 
     expectFaultContains(substring: string): this {
         const match = this.body.match(/<faultstring>(.*?)<\/faultstring>/);
-        expect(match, 'Fault element not found in response').to.not.be.null;
+        expect(match, 'Fault element not found in response').to.not.equal(null);
         expect(match![1]!).to.include(substring);
         return this;
     }
