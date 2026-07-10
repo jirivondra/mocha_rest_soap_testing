@@ -14,10 +14,14 @@ export class SoapResponse {
         return this;
     }
 
-    expectResult(expected: number): this {
+    getResult(): number {
         const match = this.body.match(/<tns:[A-Za-z]+Result>([-\d.]+)<\/tns:[A-Za-z]+Result>/);
         expect(match, 'Result element not found in response').to.not.be.null;
-        expect(parseFloat(match![1]!)).to.be.closeTo(expected, 0.001);
+        return parseFloat(match![1]!);
+    }
+
+    expectResult(expected: number): this {
+        expect(this.getResult()).to.be.closeTo(expected, 0.001);
         return this;
     }
 
