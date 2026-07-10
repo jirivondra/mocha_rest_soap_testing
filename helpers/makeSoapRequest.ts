@@ -15,7 +15,10 @@ function buildEnvelope(operation: string, params: { a: number | string; b: numbe
 </soap:Envelope>`;
 }
 
-export async function callOperation(operation: string, params: { a: number | string; b: number | string }): Promise<SoapResponse> {
+export async function callOperation(
+    operation: string,
+    params: { a: number | string; b: number | string },
+): Promise<SoapResponse> {
     const response = await soapClient.post('/', buildEnvelope(operation, params), {
         headers: { SOAPAction: operation },
     });

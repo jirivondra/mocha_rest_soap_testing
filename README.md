@@ -111,12 +111,12 @@ test/
 
 All expected HTTP status codes are defined as named constants. Use these instead of hardcoded numbers in tests.
 
-| Constant                           | Value |
-| ---------------------------------- | ----- |
-| `HTTP_STATUS.OK`                   | 200   |
-| `HTTP_STATUS.CREATED`              | 201   |
-| `HTTP_STATUS.NO_CONTENT`           | 204   |
-| `HTTP_STATUS.UNAUTHORIZED`         | 401   |
-| `HTTP_STATUS.NOT_FOUND`            | 404   |
-| `HTTP_STATUS.UNPROCESSABLE_ENTITY` | 422   |
-| `HTTP_STATUS.INTERNAL_SERVER_ERROR` | 500  |
+| Constant                            | Value |
+| ----------------------------------- | ----- |
+| `HTTP_STATUS.OK`                    | 200   |
+| `HTTP_STATUS.CREATED`               | 201   |
+| `HTTP_STATUS.NO_CONTENT`            | 204   |
+| `HTTP_STATUS.UNAUTHORIZED`          | 401   |
+| `HTTP_STATUS.NOT_FOUND`             | 404   |
+| `HTTP_STATUS.UNPROCESSABLE_ENTITY`  | 422   |
+| `HTTP_STATUS.INTERNAL_SERVER_ERROR` | 500   |

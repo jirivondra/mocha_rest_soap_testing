@@ -38,33 +38,33 @@ import { $resourceUrls } from '../../../config/urls';
 import { restTestData } from '../../../testData/restTestData';
 
 describe('Smoke - $Resource flow', function () {
-  let resourceId: number; // shared state passed between steps
+    let resourceId: number; // shared state passed between steps
 
-  it('POST /$resource - 201', async function () {
-    const response = await post($resourceUrls.base, restTestData.smoke.create);
-    resourceId = (response.json as $Type).id;
-    response.expectStatus(HTTP_STATUS.CREATED);
-  });
+    it('POST /$resource - 201', async function () {
+        const response = await post($resourceUrls.base, restTestData.smoke.create);
+        resourceId = (response.json as $Type).id;
+        response.expectStatus(HTTP_STATUS.CREATED);
+    });
 
-  it('GET /$resource - 200', async function () {
-    const response = await get($resourceUrls.base);
-    response.expectStatus(HTTP_STATUS.OK);
-  });
+    it('GET /$resource - 200', async function () {
+        const response = await get($resourceUrls.base);
+        response.expectStatus(HTTP_STATUS.OK);
+    });
 
-  it('GET /$resource/:id - 200', async function () {
-    const response = await get($resourceUrls.byId(resourceId));
-    response.expectStatus(HTTP_STATUS.OK);
-  });
+    it('GET /$resource/:id - 200', async function () {
+        const response = await get($resourceUrls.byId(resourceId));
+        response.expectStatus(HTTP_STATUS.OK);
+    });
 
-  it('PUT /$resource/:id - 200', async function () {
-    const response = await put($resourceUrls.byId(resourceId), restTestData.smoke.update);
-    response.expectStatus(HTTP_STATUS.OK);
-  });
+    it('PUT /$resource/:id - 200', async function () {
+        const response = await put($resourceUrls.byId(resourceId), restTestData.smoke.update);
+        response.expectStatus(HTTP_STATUS.OK);
+    });
 
-  it('DELETE /$resource/:id - 204', async function () {
-    const response = await del($resourceUrls.byId(resourceId));
-    response.expectStatus(HTTP_STATUS.NO_CONTENT);
-  });
+    it('DELETE /$resource/:id - 204', async function () {
+        const response = await del($resourceUrls.byId(resourceId));
+        response.expectStatus(HTTP_STATUS.NO_CONTENT);
+    });
 });
 ```
 
