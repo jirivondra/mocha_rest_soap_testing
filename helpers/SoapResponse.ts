@@ -1,5 +1,8 @@
 import { expect } from 'chai';
 
+const RESULT_NOT_FOUND = 'Result element not found in response';
+const FAULT_NOT_FOUND = 'Fault element not found in response';
+
 export class SoapResponse {
     status: number;
     body: string;
@@ -14,24 +17,28 @@ export class SoapResponse {
         return this;
     }
 
-    expectResult(expected: number): this {
+    getResult(): number {
         const match = this.body.match(/<tns:[A-Za-z]+Result>([-\d.]+)<\/tns:[A-Za-z]+Result>/);
-        expect(match, 'Result element not found in response').to.not.be.null;
-        expect(parseFloat(match![1]!)).to.be.closeTo(expected, 0.001);
+        if (!match) throw new Error(RESULT_NOT_FOUND);
+        return parseFloat(match[1]!);
+    }
+
+    expectResult(expected: number): this {
+        expect(this.getResult()).to.be.closeTo(expected, 0.001);
         return this;
     }
 
     expectFault(faultString: string): this {
         const match = this.body.match(/<faultstring>(.*?)<\/faultstring>/);
-        expect(match, 'Fault element not found in response').to.not.be.null;
-        expect(match![1]!).to.equal(faultString);
+        if (!match) throw new Error(FAULT_NOT_FOUND);
+        expect(match[1]!).to.equal(faultString);
         return this;
     }
 
     expectFaultContains(substring: string): this {
         const match = this.body.match(/<faultstring>(.*?)<\/faultstring>/);
-        expect(match, 'Fault element not found in response').to.not.be.null;
-        expect(match![1]!).to.include(substring);
+        if (!match) throw new Error(FAULT_NOT_FOUND);
+        expect(match[1]!).to.include(substring);
         return this;
     }
 }

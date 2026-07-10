@@ -18,7 +18,7 @@ Each `it` block follows the AAA pattern in a fixed order:
 - `before` — one-time setup for the whole `describe` (e.g. create a resource that all tests will read)
 - `beforeEach` — setup that must repeat before every test (e.g. create a fresh resource when each test will destroy it)
 
-**Act** — one `await` call to `makeRequest`. A single HTTP request per test.
+**Act** — one `await` call to `makeRequest`. A single HTTP request per test. Exception: tests that verify mathematical properties across operations (round-trip, commutativity) may make multiple calls within a single `it` block when the property under test inherently requires it.
 
 **Assert** — `response.expectStatus(...)` and optionally `.expectJsonSchema(...)`, chained on the response.
 
@@ -66,11 +66,13 @@ export const restTestData = {
 ```
 
 **Naming conventions:**
+
 - Top-level key — name of the endpoint or operation (`postTodo`, `add`, `smoke`)
 - Scenario key — intent of the data (`valid`, `create`, `update`, `invalidDescription`)
 - Shared data across operations — group under `common`
 
 **Dynamic vs. static data:**
+
 - Use `faker` for REST data where values must be unique across runs (titles, descriptions)
 - Use static values for SOAP data where results must be deterministic (mathematical inputs and expected outputs)
 
@@ -101,10 +103,12 @@ Each `it` block tests exactly one thing — one status code, one scenario. Do no
 When the same operation must be verified across multiple input combinations, use a `forEach` loop over a `cases` array instead of repeating `it` blocks manually. Each array entry produces one independent test.
 
 Use data-driven tests when:
+
 - The same endpoint or operation is tested with many input variants (positive, negative, float, zero, …)
 - The test body is identical across all variants — only the inputs and expected result differ
 
 Do not use data-driven tests when:
+
 - The scenarios differ structurally (different setup, different assertions) — write separate `it` blocks instead
 - There is only one or two variants — `forEach` over a single-element array adds noise without benefit
 
