@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios';
 import { authenticatedClient, unauthenticatedClient } from './apiClient';
 import { ApiResponse } from './ApiResponse';
 
-function getClient(authenticated = true) {
+function getClient(authenticated: boolean) {
     return authenticated ? authenticatedClient : unauthenticatedClient;
 }
 

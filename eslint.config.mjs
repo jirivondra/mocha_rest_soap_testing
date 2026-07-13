@@ -1,6 +1,9 @@
 import tseslint from 'typescript-eslint';
 import prettierConfig from 'eslint-config-prettier';
 
-export default tseslint.config(...tseslint.configs.recommended, prettierConfig, {
-    ignores: ['dist/', 'node_modules/', 'allure-results/', 'allure-report/'],
-});
+export default tseslint.config(
+    { ignores: ['dist/', 'node_modules/', 'allure-results/', 'allure-report/'] },
+    ...tseslint.configs.recommended,
+    prettierConfig,
+    { rules: { complexity: ['error', 2] } },
+);

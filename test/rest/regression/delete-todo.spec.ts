@@ -1,18 +1,14 @@
 import { post, del } from '../../../helpers/makeRequest';
-import { faker } from '@faker-js/faker';
 import type { Todo } from '../../../types/todo';
 import { HTTP_STATUS } from '../../../config/httpStatus';
 import { todoUrls } from '../../../config/urls';
-
-const testData = {
-    create: { title: faker.lorem.words(3), completed: false },
-};
+import { restTestData } from '../../../testData/restTestData';
 
 describe('DELETE /todos/{id}', function () {
     let todoId: number;
 
     beforeEach(async function () {
-        const response = await post(todoUrls.todos.base, testData.create);
+        const response = await post(todoUrls.todos.base, restTestData.deleteTodo.create);
         todoId = (response.json as Todo).id;
     });
 

@@ -2,10 +2,11 @@
 
 ## Layers
 
-Tests are composed from four shared layers plus the test files themselves:
+Tests are composed from five shared layers plus the test files themselves:
 
-- **config/** — named constants for URLs and HTTP status codes. Never use raw strings or numbers in tests.
-- **helpers/** — HTTP client (`makeRequest`) and response wrapper (`ApiResponse`). All request logic lives here.
+- **testData/** — all test input values and expected results. Never define data inline in test files.
+- **config/** — named constants for URLs, HTTP status codes, and SOAP operations. Never use raw strings or numbers in tests.
+- **helpers/** — HTTP client (`makeRequest`, `callOperation`) and response wrappers (`ApiResponse`, `SoapResponse`). All request logic lives here.
 - **schemas/** — response body shape definitions used for JSON validation.
 - **types/** — TypeScript interfaces for domain entities.
 
@@ -24,11 +25,57 @@ To read a value from the response body, cast `response.json` to the appropriate 
 
 ## Test data
 
-Dynamic values (titles, descriptions) are generated with `faker` and defined in a `testData` constant at the top of the file — never inline.
+All test input data lives in `testData/`, one file per protocol:
+
+- `restTestData.ts` — organized by endpoint (`postTodo`, `putTodo`, …), with scenario keys within (`valid`, `create`, `update`, `invalidDescription`). Dynamic values use `faker`.
+- `soapTestData.ts` — organized by operation (`add`, `subtract`, …). Shared invalid-input cases live under `common`. Values are static for deterministic results.
+
+Test files import the named export and never define data inline:
+
+```ts
+import { restTestData } from '../../../testData/restTestData';
+import { soapTestData } from '../../../testData/soapTestData';
+```
+
+Smoke tests reuse the first entry from regression cases instead of duplicating data:
+
+```ts
+const { a, b, expected } = soapTestData.add.cases[0]!;
+```
+
+## Data-driven tests
+
+When the same operation is verified across many input combinations, use `forEach` over a `cases` array from `testData/`. Each entry in the array produces one `it` block.
+
+```ts
+soapTestData.add.cases.forEach(({ a, b, expected }) => {
+    it(`Add(${a}, ${b}) = ${expected}`, async function () {
+        const response = await callOperation(SOAP_OPERATIONS.ADD, { a, b });
+        response.expectStatus(HTTP_STATUS.OK).expectResult(expected);
+    });
+});
+```
+
+The `it` name is generated from the actual values using a template literal — this makes every failing test immediately identifiable in the output without inspecting the data file.
+
+The same pattern applies to invalid-input (rainy day) cases:
+
+```ts
+soapTestData.common.invalidCases.forEach(({ a, b, description }) => {
+    it(`Add with ${description} → SOAP Fault`, async function () {
+        const response = await callOperation(SOAP_OPERATIONS.ADD, { a, b });
+        response
+            .expectStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+            .expectFaultContains(soapTestData.common.invalidTypeFault);
+    });
+});
+```
+
+Each `forEach` iteration is still a single independent `it` block — the same rules apply: one concern per test, AAA structure, no shared mutable state between iterations.
 
 ## Regression tests
 
-One file per endpoint. Each `it` block covers exactly one status code. Resources created during a test are cleaned up in `after`.
+One file per endpoint or operation. Each `it` block covers exactly one scenario. Resources created during a test are cleaned up in `after`.
 
 ## Smoke tests
 

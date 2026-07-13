@@ -1,20 +1,15 @@
 import { get, post, del } from '../../../helpers/makeRequest';
 import { todoSchema } from '../../../schemas/todo.schema';
-import { faker } from '@faker-js/faker';
 import type { Todo } from '../../../types/todo';
 import { HTTP_STATUS } from '../../../config/httpStatus';
 import { todoUrls } from '../../../config/urls';
-
-const testData = {
-    title: faker.lorem.words(3),
-    completed: false,
-};
+import { restTestData } from '../../../testData/restTestData';
 
 describe('GET /todos/{id}', function () {
     let todoId: number;
 
     before(async function () {
-        const response = await post(todoUrls.todos.base, testData);
+        const response = await post(todoUrls.todos.base, restTestData.getTodoById.create);
         todoId = (response.json as Todo).id;
     });
 

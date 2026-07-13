@@ -30,6 +30,7 @@ Create a `.env` file in the project root:
 BASE_URL=http://localhost:8000
 API_USERNAME=your_username
 API_PASSWORD=your_password
+SOAP_URL=http://localhost:8001
 ```
 
 ## Running Tests
@@ -37,21 +38,25 @@ API_PASSWORD=your_password
 ### npm
 
 ```bash
-npm test                  # all tests
-npm run test:api          # API tests only
-npm run test:soap         # SOAP tests only
-npm run test:regression   # regression tests
-npm run test:smoke        # smoke tests
+npm test                       # all tests
+npm run test:rest              # REST tests only
+npm run test:soap              # SOAP tests only
+npm run test:regression        # REST regression tests
+npm run test:soap:regression   # SOAP regression tests
+npm run test:smoke             # REST smoke tests
+npm run test:soap:smoke        # SOAP smoke tests
 ```
 
 ### Task
 
 ```bash
-task test        # all tests                    (alias: t)
-task test-api    # API tests only               (alias: ta)
-task test-soap   # SOAP tests only              (alias: tsoap)
-task test-regression  # regression tests        (alias: tr)
-task test-smoke  # smoke tests                  (alias: tsm)
+task test               # all tests                         (alias: t)
+task test-rest          # REST tests only                   (alias: ta)
+task test-soap          # SOAP tests only                   (alias: tsoap)
+task test-regression    # REST regression tests             (alias: tr)
+task test-soap-regression  # SOAP regression tests         (alias: tsoapr)
+task test-smoke         # REST smoke tests                  (alias: tsm)
+task test-soap-smoke    # SOAP smoke tests                  (alias: tsoapsm)
 ```
 
 ## Allure Report
@@ -87,14 +92,17 @@ task format-check # check formatting (CI)       (alias: fc)
 ```
 config/           # constants and static configuration
 docs/             # project documentation
-helpers/          # shared helpers (HTTP client, ApiResponse)
+helpers/          # shared helpers (HTTP client, ApiResponse, SOAP client)
 schemas/          # schema definitions for response validation
+testData/         # centralized test input data, one file per protocol
 types/            # TypeScript interfaces
 test/
-  api/
-    regression/   # regression tests (detailed assertions)
-    smoke/        # smoke tests (full flow)
-  soap/           # SOAP tests
+  rest/
+    regression/   # REST regression tests (detailed assertions per endpoint)
+    smoke/        # REST smoke tests (full happy-path flows)
+  soap/
+    regression/   # SOAP regression tests (detailed assertions per operation)
+    smoke/        # SOAP smoke tests (basic functional verification)
 ```
 
 ## Constants
@@ -103,11 +111,12 @@ test/
 
 All expected HTTP status codes are defined as named constants. Use these instead of hardcoded numbers in tests.
 
-| Constant                           | Value |
-| ---------------------------------- | ----- |
-| `HTTP_STATUS.OK`                   | 200   |
-| `HTTP_STATUS.CREATED`              | 201   |
-| `HTTP_STATUS.NO_CONTENT`           | 204   |
-| `HTTP_STATUS.UNAUTHORIZED`         | 401   |
-| `HTTP_STATUS.NOT_FOUND`            | 404   |
-| `HTTP_STATUS.UNPROCESSABLE_ENTITY` | 422   |
+| Constant                            | Value |
+| ----------------------------------- | ----- |
+| `HTTP_STATUS.OK`                    | 200   |
+| `HTTP_STATUS.CREATED`               | 201   |
+| `HTTP_STATUS.NO_CONTENT`            | 204   |
+| `HTTP_STATUS.UNAUTHORIZED`          | 401   |
+| `HTTP_STATUS.NOT_FOUND`             | 404   |
+| `HTTP_STATUS.UNPROCESSABLE_ENTITY`  | 422   |
+| `HTTP_STATUS.INTERNAL_SERVER_ERROR` | 500   |

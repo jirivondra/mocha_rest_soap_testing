@@ -1,3 +1,2 @@
 timeout: 10000
 retries: 2
-spec: dist/test/**/*.spec.js

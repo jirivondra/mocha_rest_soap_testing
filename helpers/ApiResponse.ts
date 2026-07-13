@@ -40,7 +40,9 @@ export class ApiResponse {
             .forEach(([key, field]) => expect(json[key], `property "${key}"`).to.be.a(field.type));
 
         Object.entries(schema)
-            .filter(([key, field]) => key in json && json[key] === null && !field.nullable)
+            .filter(([key]) => key in json)
+            .filter(([key]) => json[key] === null)
+            .filter(([, field]) => !field.nullable)
             .forEach(([key]) => expect.fail(`property "${key}" is null but not nullable`));
     }
 }
