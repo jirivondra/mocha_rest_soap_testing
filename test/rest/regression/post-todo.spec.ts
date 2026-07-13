@@ -7,14 +7,22 @@ import { restTestData } from '../../../testData/restTestData';
 
 describe('POST /todos', function () {
     let todoId: number;
+    let todoIdWithDueDate!: number;
 
     after(async function () {
         await del(todoUrls.todoById.valid(todoId));
+        await del(todoUrls.todoById.valid(todoIdWithDueDate));
     });
 
     it('Test for POST - 201', async function () {
         const response = await post(todoUrls.todos.base, restTestData.postTodo.valid);
         todoId = (response.json as Todo).id;
+        response.expectStatus(HTTP_STATUS.CREATED).expectJsonSchema(todoSchema);
+    });
+
+    it('Test for POST with due_date - 201', async function () {
+        const response = await post(todoUrls.todos.base, restTestData.postTodo.withDueDate);
+        todoIdWithDueDate = (response.json as Todo).id;
         response.expectStatus(HTTP_STATUS.CREATED).expectJsonSchema(todoSchema);
     });
 
