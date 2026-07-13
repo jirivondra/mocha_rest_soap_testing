@@ -86,6 +86,34 @@ Tests never import `axios` or interact with the HTTP client directly. `makeReque
 test file → makeRequest (facade) → apiClient (axios) → API
 ```
 
+## Cyclomatic complexity
+
+Every function must have a cyclomatic complexity of at most **2**. Complexity starts at 1 and increases by 1 for each branch: `if`, ternary `?:`, `&&`, `||`, `for`, `while`, `switch case`.
+
+A complexity above 2 is a signal that the function is doing too much or contains logic that should be split or expressed differently.
+
+Enforced automatically by ESLint — the build will fail if the limit is exceeded.
+
+**Allowed (complexity 2):**
+
+```ts
+function getClient(authenticated: boolean) {
+    return authenticated ? authenticatedClient : unauthenticatedClient; // +1
+}
+```
+
+**Not allowed (complexity 3):**
+
+```ts
+function getClient(authenticated: boolean) {
+    if (authenticated) {      // +1
+        return authenticatedClient;
+    } else if (someOther) {   // +1 → complexity 3
+        ...
+    }
+}
+```
+
 ## No if conditions in helpers
 
 Instead of `if/else` blocks, use a functional approach — `filter`, `forEach`, private methods. Conditions reduce readability and testability.
