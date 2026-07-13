@@ -22,6 +22,11 @@ describe('PUT /todos/{id}', function () {
         response.expectStatus(HTTP_STATUS.OK).expectJsonSchema(todoSchema);
     });
 
+    it('Test for PUT with due_date - 200', async function () {
+        const response = await put(todoUrls.todoById.valid(todoId), restTestData.putTodo.updateWithDueDate);
+        response.expectStatus(HTTP_STATUS.OK).expectJsonSchema(todoSchema);
+    });
+
     it('Test for PUT - 401', async function () {
         const response = await put(todoUrls.todoById.valid(todoId), restTestData.putTodo.update, false);
         response.expectStatus(HTTP_STATUS.UNAUTHORIZED);
