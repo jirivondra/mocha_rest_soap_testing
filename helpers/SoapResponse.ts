@@ -5,11 +5,13 @@ const FAULT_NOT_FOUND = 'Fault element not found in response';
 
 export class SoapResponse {
     status: number;
-    body: string;
+    result: number | null;
+    fault: string | null;
 
-    constructor({ status, body }: { status: number; body: string }) {
+    constructor({ status, result, fault }: { status: number; result: number | null; fault: string | null }) {
         this.status = status;
-        this.body = body;
+        this.result = result;
+        this.fault = fault;
     }
 
     expectStatus(code: number): this {
@@ -18,9 +20,8 @@ export class SoapResponse {
     }
 
     getResult(): number {
-        const match = this.body.match(/<tns:[A-Za-z]+Result>([-\d.]+)<\/tns:[A-Za-z]+Result>/);
-        if (!match) throw new Error(RESULT_NOT_FOUND);
-        return parseFloat(match[1]!);
+        if (this.result === null) throw new Error(RESULT_NOT_FOUND);
+        return this.result;
     }
 
     expectResult(expected: number): this {
@@ -29,16 +30,17 @@ export class SoapResponse {
     }
 
     expectFault(faultString: string): this {
-        const match = this.body.match(/<faultstring>(.*?)<\/faultstring>/);
-        if (!match) throw new Error(FAULT_NOT_FOUND);
-        expect(match[1]!).to.equal(faultString);
+        expect(this.getFault()).to.equal(faultString);
         return this;
     }
 
     expectFaultContains(substring: string): this {
-        const match = this.body.match(/<faultstring>(.*?)<\/faultstring>/);
-        if (!match) throw new Error(FAULT_NOT_FOUND);
-        expect(match[1]!).to.include(substring);
+        expect(this.getFault()).to.include(substring);
         return this;
+    }
+
+    private getFault(): string {
+        if (this.fault === null) throw new Error(FAULT_NOT_FOUND);
+        return this.fault;
     }
 }

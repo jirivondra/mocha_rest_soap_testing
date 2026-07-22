@@ -22,7 +22,7 @@ test/
 
 Static, reusable constants shared across the project.
 
-- `httpStatus.ts` — named HTTP status code constants (`HTTP_STATUS.OK`, `HTTP_STATUS.NOT_FOUND`, …). Always use these instead of raw numbers.
+- `httpStatus.ts` — named HTTP status code constants (`HTTP_STATUS.OK`, `HTTP_STATUS.NOT_FOUND`, …), sourced from axios's `HttpStatusCode` enum. Always use these instead of raw numbers.
 - `urls.ts` — named URL path constants. Always use these instead of inline strings.
 - `soapOperations.ts` — named SOAP operation constants (`SOAP_OPERATIONS.ADD`, `SOAP_OPERATIONS.DIVIDE`, …). Always use these instead of raw strings.
 
@@ -33,8 +33,8 @@ Shared logic that supports test files. No test logic lives here.
 - `apiClient.ts` — configures two Axios instances: `authenticatedClient` (with Basic Auth from `.env`) and `unauthenticatedClient`. Base URL is read from `BASE_URL` env variable.
 - `makeRequest.ts` — thin wrapper over `apiClient` exposing `get`, `post`, `put`, `del`. Each function accepts `authenticated` flag (default `true`) and returns `ApiResponse`.
 - `ApiResponse.ts` — fluent response wrapper. Provides `expectStatus(code)` and `expectJsonSchema(schema)` for assertions. Chains are supported (`response.expectStatus(...).expectJsonSchema(...)`).
-- `soapClient.ts` — Axios instance for SOAP requests (`Content-Type: text/xml`). Base URL is read from `SOAP_URL` env variable.
-- `makeSoapRequest.ts` — SOAP facade exposing `callOperation(operation, { a, b })`. Builds the XML envelope and returns `SoapResponse`.
+- `soapClient.ts` — resolves a `soap` client (via `soap.createClientAsync`) against the WSDL at `SOAP_URL`.
+- `makeSoapRequest.ts` — SOAP facade exposing `callOperation(operation, { a, b })`. Invokes the generated `soap` client method and returns `SoapResponse`.
 - `SoapResponse.ts` — fluent SOAP response wrapper. Provides `expectStatus(code)` for assertions.
 
 ## testData/
@@ -48,9 +48,9 @@ Test files import the named export and reference data by key — never define in
 
 ## schemas/
 
-Schema definitions used by `ApiResponse.expectJsonSchema()` to validate response body shape and types.
+Schema definitions used by `ApiResponse.expectJsonSchema()` to validate response body shape and types. Written as standard JSON Schema objects, validated at runtime with `ajv`.
 
-- `todo.schema.ts` — schema for the Todo entity, describing each field's type, `required` flag, and `nullable` flag.
+- `todo.schema.ts` — JSON Schema for the Todo entity: `properties` per field, a `required` array for mandatory fields, and `type: [..., 'null']` for nullable fields.
 
 ## types/
 

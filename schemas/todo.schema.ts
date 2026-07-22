@@ -1,13 +1,13 @@
-export interface SchemaField {
-    type: string;
-    required: boolean;
-    nullable: boolean;
-}
+import type { SchemaObject } from 'ajv';
 
-export const todoSchema: Record<string, SchemaField> = {
-    id: { type: 'number', required: true, nullable: false },
-    title: { type: 'string', required: true, nullable: false },
-    description: { type: 'string', required: false, nullable: true },
-    completed: { type: 'boolean', required: true, nullable: false },
-    due_date: { type: 'string', required: false, nullable: true },
+export const todoSchema: SchemaObject = {
+    type: 'object',
+    properties: {
+        id: { type: 'number' },
+        title: { type: 'string' },
+        description: { type: ['string', 'null'] },
+        completed: { type: 'boolean' },
+        due_date: { type: ['string', 'null'] },
+    },
+    required: ['id', 'title', 'completed'],
 };

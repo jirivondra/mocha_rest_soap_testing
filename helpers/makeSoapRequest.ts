@@ -1,26 +1,28 @@
-import { soapClient } from './soapClient';
+import { soapClientPromise } from './soapClient';
 import { SoapResponse } from './SoapResponse';
+import { HTTP_STATUS } from '../config/httpStatus';
 
-const SOAP_NAMESPACE = 'chronos.calculator';
-
-function buildEnvelope(operation: string, params: { a: number | string; b: number | string }): string {
-    return `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="${SOAP_NAMESPACE}">
-  <soap:Body>
-    <tns:${operation}>
-      <tns:a>${params.a}</tns:a>
-      <tns:b>${params.b}</tns:b>
-    </tns:${operation}>
-  </soap:Body>
-</soap:Envelope>`;
+interface SoapFaultError {
+    root: { Envelope: { Body: { Fault: { faultstring: string } } } };
 }
 
 export async function callOperation(
     operation: string,
     params: { a: number | string; b: number | string },
 ): Promise<SoapResponse> {
-    const response = await soapClient.post('/', buildEnvelope(operation, params), {
-        headers: { SOAPAction: operation },
+    const client = await soapClientPromise;
+    let status: number = HTTP_STATUS.OK;
+    client.once('response', (_body: unknown, response: { status: number }) => {
+        status = response.status;
     });
-    return new SoapResponse({ status: response.status, body: response.data });
+
+    return client[`${operation}Async`](params)
+        .then(
+            ([result]: [Record<string, number>]) =>
+                new SoapResponse({ status, result: result[`${operation}Result`]!, fault: null }),
+        )
+        .catch(
+            (err: SoapFaultError) =>
+                new SoapResponse({ status, result: null, fault: err.root.Envelope.Body.Fault.faultstring }),
+        );
 }
