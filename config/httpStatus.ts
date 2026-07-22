@@ -1,9 +1,11 @@
-export const HTTP_STATUS = {
-    OK: 200,
-    CREATED: 201,
-    NO_CONTENT: 204,
-    UNAUTHORIZED: 401,
-    NOT_FOUND: 404,
-    UNPROCESSABLE_ENTITY: 422,
-    INTERNAL_SERVER_ERROR: 500,
-} as const;
+import { HttpStatusCode } from 'axios';
+
+export enum HTTP_STATUS {
+    OK = HttpStatusCode.Ok,
+    CREATED = HttpStatusCode.Created,
+    NO_CONTENT = HttpStatusCode.NoContent,
+    UNAUTHORIZED = HttpStatusCode.Unauthorized,
+    NOT_FOUND = HttpStatusCode.NotFound,
+    UNPROCESSABLE_ENTITY = HttpStatusCode.UnprocessableEntity,
+    INTERNAL_SERVER_ERROR = HttpStatusCode.InternalServerError,
+}

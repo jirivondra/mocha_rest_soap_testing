@@ -8,6 +8,14 @@ All code must follow the DRY principle — no duplicated logic or code. Repeated
 
 Only add code that is currently needed. Add new helpers, functions, or abstractions only when they are actually used.
 
+## Prefer existing libraries
+
+Before writing non-trivial logic by hand — parsing, encoding, validation, or standardized values — check whether a library the project already depends on (or already has installed) provides it. Recreating what a library already solves adds risk (missed edge cases, bugs) and ongoing maintenance for no benefit.
+
+This does not mean adding a dependency for every small thing — a handful of stable, project-specific constants (URLs, SOAP operation names) are fine to own directly. It targets logic: parsing, validation, encoding, or standardized values that a mature library already implements correctly.
+
+**Example:** `config/httpStatus.ts` sources its values from axios's `HttpStatusCode` enum instead of hardcoding the same numbers by hand — axios is already a project dependency, so duplicating a set of values it already defines adds no value.
+
 ## AAA (Arrange – Act – Assert)
 
 Each `it` block follows the AAA pattern in a fixed order:

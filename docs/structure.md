@@ -22,7 +22,7 @@ test/
 
 Static, reusable constants shared across the project.
 
-- `httpStatus.ts` — named HTTP status code constants (`HTTP_STATUS.OK`, `HTTP_STATUS.NOT_FOUND`, …). Always use these instead of raw numbers.
+- `httpStatus.ts` — named HTTP status code constants (`HTTP_STATUS.OK`, `HTTP_STATUS.NOT_FOUND`, …), sourced from axios's `HttpStatusCode` enum. Always use these instead of raw numbers.
 - `urls.ts` — named URL path constants. Always use these instead of inline strings.
 - `soapOperations.ts` — named SOAP operation constants (`SOAP_OPERATIONS.ADD`, `SOAP_OPERATIONS.DIVIDE`, …). Always use these instead of raw strings.
 
