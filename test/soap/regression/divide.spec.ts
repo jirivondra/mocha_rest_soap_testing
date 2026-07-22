@@ -12,10 +12,9 @@ describe('SOAP - Divide', function () {
     });
 
     it(`Divide(${soapTestData.divide.divisionByZero.a}, ${soapTestData.divide.divisionByZero.b}) → SOAP Fault`, async function () {
-        const response = await callOperation(SOAP_OPERATIONS.DIVIDE, soapTestData.divide.divisionByZero);
-        response
-            .expectStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
-            .expectFault(soapTestData.divide.divisionByZero.faultString);
+        const { a, b, faultString } = soapTestData.divide.divisionByZero;
+        const response = await callOperation(SOAP_OPERATIONS.DIVIDE, { a, b });
+        response.expectStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR).expectFault(faultString);
     });
 
     soapTestData.common.invalidCases.forEach(({ a, b, description }) => {

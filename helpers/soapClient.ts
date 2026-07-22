@@ -1,12 +1,6 @@
 import * as dotenv from 'dotenv';
-import axios from 'axios';
+import * as soap from 'soap';
 
 dotenv.config();
 
-export const soapClient = axios.create({
-    baseURL: process.env.SOAP_URL!,
-    validateStatus: () => true,
-    headers: {
-        'Content-Type': 'text/xml; charset=utf-8',
-    },
-});
+export const soapClientPromise: Promise<soap.Client> = soap.createClientAsync(`${process.env.SOAP_URL!}/?wsdl`);

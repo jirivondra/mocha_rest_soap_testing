@@ -33,8 +33,8 @@ Shared logic that supports test files. No test logic lives here.
 - `apiClient.ts` — configures two Axios instances: `authenticatedClient` (with Basic Auth from `.env`) and `unauthenticatedClient`. Base URL is read from `BASE_URL` env variable.
 - `makeRequest.ts` — thin wrapper over `apiClient` exposing `get`, `post`, `put`, `del`. Each function accepts `authenticated` flag (default `true`) and returns `ApiResponse`.
 - `ApiResponse.ts` — fluent response wrapper. Provides `expectStatus(code)` and `expectJsonSchema(schema)` for assertions. Chains are supported (`response.expectStatus(...).expectJsonSchema(...)`).
-- `soapClient.ts` — Axios instance for SOAP requests (`Content-Type: text/xml`). Base URL is read from `SOAP_URL` env variable.
-- `makeSoapRequest.ts` — SOAP facade exposing `callOperation(operation, { a, b })`. Builds the XML envelope and returns `SoapResponse`.
+- `soapClient.ts` — resolves a `soap` client (via `soap.createClientAsync`) against the WSDL at `SOAP_URL`.
+- `makeSoapRequest.ts` — SOAP facade exposing `callOperation(operation, { a, b })`. Invokes the generated `soap` client method and returns `SoapResponse`.
 - `SoapResponse.ts` — fluent SOAP response wrapper. Provides `expectStatus(code)` for assertions.
 
 ## testData/
