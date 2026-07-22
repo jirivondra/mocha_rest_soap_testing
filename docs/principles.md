@@ -16,6 +16,12 @@ This does not mean adding a dependency for every small thing — a handful of st
 
 **Example:** `config/httpStatus.ts` sources its values from axios's `HttpStatusCode` enum instead of hardcoding the same numbers by hand — axios is already a project dependency, so duplicating a set of values it already defines adds no value.
 
+## Documentation stays in sync
+
+Whenever a change affects tooling, dependencies, or the shape of a shared file (schema format, config structure, helper behavior), update the relevant `docs/` file in the same change. Documentation describing an implementation that no longer exists is misleading and contradicts the code it claims to describe.
+
+**Example:** switching `schemas/todo.schema.ts` from a custom field format to standard JSON Schema validated by `ajv` also required updating its description in `docs/structure.md`.
+
 ## AAA (Arrange – Act – Assert)
 
 Each `it` block follows the AAA pattern in a fixed order:

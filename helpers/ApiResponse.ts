@@ -1,5 +1,7 @@
 import { expect } from 'chai';
-import type { SchemaField } from '../schemas/todo.schema';
+import Ajv, { SchemaObject, ValidateFunction } from 'ajv';
+
+const ajv = new Ajv({ allErrors: true });
 
 export class ApiResponse {
     status: number;
@@ -15,34 +17,17 @@ export class ApiResponse {
         return this;
     }
 
-    expectJsonSchema(schema: Record<string, SchemaField>): this {
-        this.normalizeToArray(this.json).forEach((item) => {
-            this.validateRequiredKeys(item, schema);
-            this.validateFieldTypes(item, schema);
-        });
+    expectJsonSchema(schema: SchemaObject): this {
+        const validate = ajv.compile(schema);
+        this.normalizeToArray(this.json).forEach((item) => this.assertValid(validate, item));
         return this;
     }
 
-    private normalizeToArray(json: unknown): Record<string, unknown>[] {
-        return Array.isArray(json) ? json : [json as Record<string, unknown>];
+    private normalizeToArray(json: unknown): unknown[] {
+        return Array.isArray(json) ? json : [json];
     }
 
-    private validateRequiredKeys(json: Record<string, unknown>, schema: Record<string, SchemaField>): void {
-        const requiredKeys = Object.entries(schema)
-            .filter(([, field]) => field.required)
-            .map(([key]) => key);
-        expect(json).to.include.all.keys(requiredKeys);
-    }
-
-    private validateFieldTypes(json: Record<string, unknown>, schema: Record<string, SchemaField>): void {
-        Object.entries(schema)
-            .filter(([key]) => key in json && json[key] !== null)
-            .forEach(([key, field]) => expect(json[key], `property "${key}"`).to.be.a(field.type));
-
-        Object.entries(schema)
-            .filter(([key]) => key in json)
-            .filter(([key]) => json[key] === null)
-            .filter(([, field]) => !field.nullable)
-            .forEach(([key]) => expect.fail(`property "${key}" is null but not nullable`));
+    private assertValid(validate: ValidateFunction, item: unknown): void {
+        expect(validate(item), ajv.errorsText(validate.errors)).to.equal(true);
     }
 }

@@ -48,9 +48,9 @@ Test files import the named export and reference data by key — never define in
 
 ## schemas/
 
-Schema definitions used by `ApiResponse.expectJsonSchema()` to validate response body shape and types.
+Schema definitions used by `ApiResponse.expectJsonSchema()` to validate response body shape and types. Written as standard JSON Schema objects, validated at runtime with `ajv`.
 
-- `todo.schema.ts` — schema for the Todo entity, describing each field's type, `required` flag, and `nullable` flag.
+- `todo.schema.ts` — JSON Schema for the Todo entity: `properties` per field, a `required` array for mandatory fields, and `type: [..., 'null']` for nullable fields.
 
 ## types/
 
