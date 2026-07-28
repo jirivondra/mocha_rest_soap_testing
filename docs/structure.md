@@ -9,10 +9,13 @@ helpers/      # shared helpers used across all tests
 schemas/      # schema definitions for response body validation
 testData/     # centralized test input data, one file per protocol
 types/        # TypeScript interfaces
+wiremock/
+  mappings/     # static WireMock stub mapping files
 test/
   rest/
     regression/   # regression tests — detailed assertions per endpoint
     smoke/        # smoke tests — full happy-path flows
+    mock/         # WireMock-backed tests for mutating endpoints
   soap/
     regression/   # SOAP regression tests — detailed assertions per operation
     smoke/        # SOAP smoke tests — basic functional verification
@@ -34,6 +37,8 @@ Thin, project-local wiring around `@jirivondra/chronos-test-toolkit-api-ts`. No 
 - `makeRequest.ts` — wires `createRequestHelpers(clients)` from the toolkit, re-exporting `get`, `post`, `put`, `del`. Each function accepts an `authenticated` flag (default `true`) and returns `ApiResponse`.
 - `soapClient.ts` — wires `createSoapClient` from the toolkit against the WSDL at `SOAP_URL`.
 - `makeSoapRequest.ts` — wires `createSoapRequestHelper` from the toolkit, re-exporting `callOperation(operation, params)`.
+- `mockApiClient.ts` — wires `createHttpClients` against `WIREMOCK_URL` instead of `BASE_URL`, exporting `mockClients: HttpClients`.
+- `makeMockRequest.ts` — wires `createRequestHelpers(mockClients)`, re-exporting `get`, `post`, `put`, `del` for use against the local WireMock stub server.
 
 `ApiResponse` (fluent `expectStatus`/`expectJsonSchema`) and `SoapResponse` (fluent `expectStatus`/`expectResult`/`expectFault`/`expectFaultContains`) live entirely in `@jirivondra/chronos-test-toolkit-api-ts` — see that package's README for their full API.
 
@@ -43,6 +48,7 @@ Centralized test input data shared across all test files. One file per protocol.
 
 - `restTestData.ts` — input data for REST tests, organized by endpoint. Dynamic values are generated with `faker`.
 - `soapTestData.ts` — input data for SOAP tests, organized by operation. Contains `common` for shared invalid-input cases used across all operations.
+- `mockTestData.ts` — input data for WireMock-backed REST tests. Values are static, matching the request bodies and URLs baked into the corresponding `wiremock/mappings/*.json` stub files.
 
 Test files import the named export and reference data by key — never define input values inline in test files.
 
@@ -58,6 +64,12 @@ TypeScript interfaces for domain entities used in tests and helpers.
 
 - `todo.ts` — `Todo` interface (id, title, completed, …).
 
+## wiremock/
+
+Static configuration for the local [WireMock](https://wiremock.org) stub server used by `test/rest/mock/`.
+
+- `mappings/*.json` — one file per stubbed request: matches a method/URL/body and returns a fixed response. Loaded automatically when the container starts (see `docker-compose.yml`, task `wiremock-up`). Values here are declarative external config, not application code — matched request bodies are exempt from the "no hardcoded values" rule the same way `config/soapOperations.ts` constants are.
+
 ## test/
 
 All test files live here, organized by protocol and test type.
@@ -69,6 +81,10 @@ One file per endpoint. Each file covers all scenarios for that endpoint: happy p
 ### test/rest/smoke/
 
 End-to-end flows that verify the system works as a whole. A single test typically creates, reads, updates, and deletes a resource in sequence.
+
+### test/rest/mock/
+
+One file per mutating endpoint (POST/PUT/DELETE), run against a local WireMock instance instead of `BASE_URL`. Verifies the request/response contract without ever touching the real backend, so no data is created — no `before`/`after` cleanup is needed. `task test-mock` / `npm run test:mock` start the WireMock container, run the tests, and stop the container automatically.
 
 ### test/soap/regression/
 
@@ -87,4 +103,5 @@ BASE_URL=http://localhost:8000
 API_USERNAME=your_username
 API_PASSWORD=your_password
 SOAP_URL=http://localhost:8001
+WIREMOCK_URL=http://localhost:8080
 ```

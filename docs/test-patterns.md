@@ -6,7 +6,7 @@ Tests are composed from five shared layers plus the test files themselves:
 
 - **testData/** — all test input values and expected results. Never define data inline in test files.
 - **config/** — named constants for URLs, HTTP status codes, and SOAP operations. Never use raw strings or numbers in tests.
-- **helpers/** — thin project-local wiring (`makeRequest`, `makeSoapRequest`) around `@jirivondra/chronos-test-toolkit-api-ts`, which owns the actual HTTP/SOAP client logic and response wrappers (`ApiResponse`, `SoapResponse`).
+- **helpers/** — thin project-local wiring (`makeRequest`, `makeSoapRequest`, `makeMockRequest`) around `@jirivondra/chronos-test-toolkit-api-ts`, which owns the actual HTTP/SOAP client logic and response wrappers (`ApiResponse`, `SoapResponse`).
 - **schemas/** — response body shape definitions used for JSON validation.
 - **types/** — TypeScript interfaces for domain entities.
 
@@ -29,6 +29,7 @@ All test input data lives in `testData/`, one file per protocol:
 
 - `restTestData.ts` — organized by endpoint (`postTodo`, `putTodo`, …), with scenario keys within (`valid`, `create`, `update`, `invalidDescription`). Dynamic values use `faker`.
 - `soapTestData.ts` — organized by operation (`add`, `subtract`, …). Shared invalid-input cases live under `common`. Values are static for deterministic results.
+- `mockTestData.ts` — organized by endpoint (`postTodo`, `putTodo`, `deleteTodo`). Values are static, mirroring `soapTestData.ts`'s reasoning: WireMock matches requests by their exact literal content, so a `faker`-generated body would never hit a stub.
 
 Test files import the named export and never define data inline:
 
@@ -80,6 +81,38 @@ One file per endpoint or operation. Each `it` block covers exactly one scenario.
 ## Smoke tests
 
 One file per flow. Sequential `it` blocks share state via a `let` variable in the `describe` scope. Only the status code is asserted — detailed validation belongs in regression tests.
+
+## Mock tests (WireMock)
+
+One file per mutating endpoint (POST/PUT/DELETE), living in `test/rest/mock/`. Instead of `makeRequest`, tests import `makeMockRequest`, which points at a local WireMock instance (`WIREMOCK_URL`) instead of `BASE_URL`:
+
+```ts
+import { post } from '../../../helpers/makeMockRequest';
+import { mockTestData } from '../../../testData/mockTestData';
+
+const response = await post(todoUrls.todos.base, mockTestData.postTodo.valid);
+response.expectStatus(HTTP_STATUS.CREATED).expectJsonSchema(todoSchema);
+```
+
+The request body must exactly match what's configured in the corresponding `wiremock/mappings/*.json` stub, which is why `mockTestData.ts` uses static values instead of `faker`. Since WireMock never persists anything, these tests need no `before`/`after` cleanup — there's nothing created to delete. `task test-mock` (or `npm run test:mock`) starts the WireMock container from `docker-compose.yml`, runs the tests, and stops the container again — no manual setup step required.
+
+### Debugging mock tests
+
+A stub mismatch surfaces in Mocha as a plain assertion error — e.g. `AssertionError: expected 404 to equal 201` — because WireMock's own diagnostics live in the response body, which `expectStatus`/`expectJsonSchema` never inspect. To see the actual reason, use WireMock's admin API directly. Start the container standalone first (`task wiremock-up` — `task test-mock` tears it down as soon as the run finishes):
+
+- **Reproduce by hand** — take the exact body from the failing test's `testData/mockTestData.ts` entry and send it with `curl` against `WIREMOCK_URL`. A non-matching request gets a human-readable diff back, showing the closest stub side-by-side with what was actually sent:
+
+    ```bash
+    curl -i -X POST http://localhost:8080/todos \
+      -H "Content-Type: application/json" \
+      -d '{"title":"Something else","completed":false}'
+    ```
+
+- **`GET /__admin/mappings`** — lists every stub currently loaded, useful to confirm a mapping file was picked up at all.
+- **`GET /__admin/requests/unmatched`** — the journal of requests WireMock received but couldn't match to any stub, including their raw body. Handy when you don't know what was actually sent (e.g. from a CI log) rather than reproducing by hand. It accumulates for the container's lifetime; clear it with `POST /__admin/requests/reset`.
+- **`Matched-Stub-Id` response header** — present on every successful (matched) response; identifies which mapping answered, useful when several stubs could plausibly overlap.
+
+There is no bundled visual UI in the open-source `wiremock/wiremock` Docker image (`/__admin/webapp` doesn't exist) — the admin endpoints above are plain JSON, readable directly in a browser, via `curl`, or through a REST client like Postman.
 
 ---
 

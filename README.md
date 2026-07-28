@@ -4,15 +4,15 @@ Automated tests for REST API and SOAP services using the Mocha framework.
 
 ## Libraries
 
-| Library                                                                                  | Version | Purpose                                        |
-| ----------------------------------------------------------------------------------------- | ------- | ----------------------------------------------- |
+| Library                                                                                              | Version | Purpose                                                                                      |
+| ---------------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------- |
 | [@jirivondra/chronos-test-toolkit-api-ts](https://github.com/jirivondra/chronos-test-toolkit-api-ts) | ^0.1    | Shared HTTP/SOAP client helpers, response wrappers (brings axios/chai/ajv/soap transitively) |
-| [mocha](https://mochajs.org)                 | ^11     | Test framework                |
-| [dotenv](https://github.com/motdotla/dotenv) | ^17     | Loading variables from `.env` |
-| [typescript](https://www.typescriptlang.org) | ^6      | TypeScript support            |
-| [ts-node](https://typestrong.org/ts-node)    | ^10     | Running TypeScript files      |
-| [allure-mocha](https://allurereport.org)     | ^3      | Allure report generation      |
-| [@faker-js/faker](https://fakerjs.dev)       | ^10     | Dynamic test data generation  |
+| [mocha](https://mochajs.org)                                                                         | ^11     | Test framework                                                                               |
+| [dotenv](https://github.com/motdotla/dotenv)                                                         | ^17     | Loading variables from `.env`                                                                |
+| [typescript](https://www.typescriptlang.org)                                                         | ^6      | TypeScript support                                                                           |
+| [ts-node](https://typestrong.org/ts-node)                                                            | ^10     | Running TypeScript files                                                                     |
+| [allure-mocha](https://allurereport.org)                                                             | ^3      | Allure report generation                                                                     |
+| [@faker-js/faker](https://fakerjs.dev)                                                               | ^10     | Dynamic test data generation                                                                 |
 
 ## Installation
 
@@ -38,6 +38,7 @@ BASE_URL=http://localhost:8000
 API_USERNAME=your_username
 API_PASSWORD=your_password
 SOAP_URL=http://localhost:8001
+WIREMOCK_URL=http://localhost:8080
 ```
 
 ## Running Tests
@@ -52,6 +53,7 @@ npm run test:regression        # REST regression tests
 npm run test:soap:regression   # SOAP regression tests
 npm run test:smoke             # REST smoke tests
 npm run test:soap:smoke        # SOAP smoke tests
+npm run test:mock              # REST mock tests (requires WireMock, see below)
 ```
 
 ### Task
@@ -64,7 +66,22 @@ task test-regression    # REST regression tests             (alias: tr)
 task test-soap-regression  # SOAP regression tests         (alias: tsoapr)
 task test-smoke         # REST smoke tests                  (alias: tsm)
 task test-soap-smoke    # SOAP smoke tests                  (alias: tsoapsm)
+task test-mock          # REST mock tests (WireMock)         (alias: tm)
 ```
+
+## WireMock (mock tests)
+
+`test/rest/mock/` verifies mutating endpoints (POST/PUT/DELETE) against static stub responses instead of a
+real backend, so no data is ever created. Requires Docker to be running:
+
+```bash
+task test-mock      # starts WireMock, runs the mock tests, stops WireMock — one command
+npm run test:mock   # same, via npm
+```
+
+`task wiremock-up`/`task wiremock-down` are also available standalone (e.g. to keep the container running
+while inspecting stubs via its admin API at `http://localhost:8080/__admin/mappings`). Stub mappings live
+in `wiremock/mappings/*.json`. See `docs/test-patterns.md` for the pattern.
 
 ## Allure Report
 
@@ -103,10 +120,13 @@ helpers/          # thin wiring around @jirivondra/chronos-test-toolkit-api-ts
 schemas/          # schema definitions for response validation
 testData/         # centralized test input data, one file per protocol
 types/            # TypeScript interfaces
+wiremock/
+  mappings/       # static WireMock stub mapping files
 test/
   rest/
     regression/   # REST regression tests (detailed assertions per endpoint)
     smoke/        # REST smoke tests (full happy-path flows)
+    mock/         # WireMock-backed tests for mutating endpoints
   soap/
     regression/   # SOAP regression tests (detailed assertions per operation)
     smoke/        # SOAP smoke tests (basic functional verification)
