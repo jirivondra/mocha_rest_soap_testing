@@ -1,4 +1,4 @@
-# Mocha API & SOAP Testing
+# Mocha REST & SOAP Testing
 
 @docs/principles.md
 @docs/structure.md

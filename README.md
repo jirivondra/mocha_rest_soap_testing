@@ -1,4 +1,4 @@
-# Mocha API & SOAP Testing
+# Mocha REST & SOAP Testing
 
 Automated tests for REST API and SOAP services using the Mocha framework.
 

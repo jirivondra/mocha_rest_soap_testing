@@ -22,7 +22,7 @@ tasks:
 
     test-rest:
         aliases: [ta]
-        desc: Run API tests only
+        desc: Run REST tests only
         deps: [build]
         cmd: npx mocha --spec 'dist/test/rest/**/*.spec.js'
 
@@ -34,7 +34,7 @@ tasks:
 
     test-regression:
         aliases: [tr]
-        desc: Run API regression tests
+        desc: Run REST regression tests
         deps: [build]
         cmd: npx mocha --spec 'dist/test/rest/regression/**/*.spec.js'
 
@@ -46,7 +46,7 @@ tasks:
 
     test-smoke:
         aliases: [tsm]
-        desc: Run API smoke tests
+        desc: Run REST smoke tests
         deps: [build]
         cmd: npx mocha --spec 'dist/test/rest/smoke/**/*.spec.js'
 
