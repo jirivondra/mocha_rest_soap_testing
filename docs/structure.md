@@ -22,20 +22,20 @@ test/
 
 Static, reusable constants shared across the project.
 
-- `httpStatus.ts` — named HTTP status code constants (`HTTP_STATUS.OK`, `HTTP_STATUS.NOT_FOUND`, …), sourced from axios's `HttpStatusCode` enum. Always use these instead of raw numbers.
+- `httpStatus.ts` — re-exports `HTTP_STATUS` from `@jirivondra/chronos-test-toolkit-api-ts`, which sources its values from axios's `HttpStatusCode` enum. Always use these instead of raw numbers.
 - `urls.ts` — named URL path constants. Always use these instead of inline strings.
 - `soapOperations.ts` — named SOAP operation constants (`SOAP_OPERATIONS.ADD`, `SOAP_OPERATIONS.DIVIDE`, …). Always use these instead of raw strings.
 
 ## helpers/
 
-Shared logic that supports test files. No test logic lives here.
+Thin, project-local wiring around `@jirivondra/chronos-test-toolkit-api-ts`. No request/response logic lives here — that's the shared package's job.
 
-- `apiClient.ts` — configures two Axios instances: `authenticatedClient` (with Basic Auth from `.env`) and `unauthenticatedClient`. Base URL is read from `BASE_URL` env variable.
-- `makeRequest.ts` — thin wrapper over `apiClient` exposing `get`, `post`, `put`, `del`. Each function accepts `authenticated` flag (default `true`) and returns `ApiResponse`.
-- `ApiResponse.ts` — fluent response wrapper. Provides `expectStatus(code)` and `expectJsonSchema(schema)` for assertions. Chains are supported (`response.expectStatus(...).expectJsonSchema(...)`).
-- `soapClient.ts` — resolves a `soap` client (via `soap.createClientAsync`) against the WSDL at `SOAP_URL`.
-- `makeSoapRequest.ts` — SOAP facade exposing `callOperation(operation, { a, b })`. Invokes the generated `soap` client method and returns `SoapResponse`.
-- `SoapResponse.ts` — fluent SOAP response wrapper. Provides `expectStatus(code)` for assertions.
+- `apiClient.ts` — wires `createHttpClients` from the toolkit with this project's `.env` (`BASE_URL`, `API_USERNAME`, `API_PASSWORD`), exporting `clients: HttpClients`.
+- `makeRequest.ts` — wires `createRequestHelpers(clients)` from the toolkit, re-exporting `get`, `post`, `put`, `del`. Each function accepts an `authenticated` flag (default `true`) and returns `ApiResponse`.
+- `soapClient.ts` — wires `createSoapClient` from the toolkit against the WSDL at `SOAP_URL`.
+- `makeSoapRequest.ts` — wires `createSoapRequestHelper` from the toolkit, re-exporting `callOperation(operation, params)`.
+
+`ApiResponse` (fluent `expectStatus`/`expectJsonSchema`) and `SoapResponse` (fluent `expectStatus`/`expectResult`/`expectFault`/`expectFaultContains`) live entirely in `@jirivondra/chronos-test-toolkit-api-ts` — see that package's README for their full API.
 
 ## testData/
 

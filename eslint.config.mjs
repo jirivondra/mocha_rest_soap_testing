@@ -1,9 +1,3 @@
-import tseslint from 'typescript-eslint';
-import prettierConfig from 'eslint-config-prettier';
+import baseConfig from '@jirivondra/chronos-test-toolkit-api-ts/eslint-config';
 
-export default tseslint.config(
-    { ignores: ['dist/', 'node_modules/', 'allure-results/', 'allure-report/'] },
-    ...tseslint.configs.recommended,
-    prettierConfig,
-    { rules: { complexity: ['error', 2] } },
-);
+export default [...baseConfig, { ignores: ['allure-results/', 'allure-report/'] }];

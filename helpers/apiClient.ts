@@ -1,19 +1,12 @@
 import * as dotenv from 'dotenv';
-import axios from 'axios';
+import { createHttpClients, HttpClients } from '@jirivondra/chronos-test-toolkit-api-ts';
 
 dotenv.config();
 
-const baseConfig = {
+export const clients: HttpClients = createHttpClients({
     baseURL: process.env.BASE_URL!,
-    validateStatus: () => true,
-};
-
-export const authenticatedClient = axios.create({
-    ...baseConfig,
     auth: {
         username: process.env.API_USERNAME!,
         password: process.env.API_PASSWORD!,
     },
 });
-
-export const unauthenticatedClient = axios.create(baseConfig);
