@@ -1,2 +1,1 @@
-timeout: 10000
-retries: 2
+extends: ./node_modules/@jirivondra/chronos-test-toolkit-api-ts/.mocharc.base.yml
