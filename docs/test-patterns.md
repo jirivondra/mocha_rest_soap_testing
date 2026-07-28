@@ -96,6 +96,24 @@ response.expectStatus(HTTP_STATUS.CREATED).expectJsonSchema(todoSchema);
 
 The request body must exactly match what's configured in the corresponding `wiremock/mappings/*.json` stub, which is why `mockTestData.ts` uses static values instead of `faker`. Since WireMock never persists anything, these tests need no `before`/`after` cleanup — there's nothing created to delete. `task test-mock` (or `npm run test:mock`) starts the WireMock container from `docker-compose.yml`, runs the tests, and stops the container again — no manual setup step required.
 
+### Debugging mock tests
+
+A stub mismatch surfaces in Mocha as a plain assertion error — e.g. `AssertionError: expected 404 to equal 201` — because WireMock's own diagnostics live in the response body, which `expectStatus`/`expectJsonSchema` never inspect. To see the actual reason, use WireMock's admin API directly. Start the container standalone first (`task wiremock-up` — `task test-mock` tears it down as soon as the run finishes):
+
+- **Reproduce by hand** — take the exact body from the failing test's `testData/mockTestData.ts` entry and send it with `curl` against `WIREMOCK_URL`. A non-matching request gets a human-readable diff back, showing the closest stub side-by-side with what was actually sent:
+
+    ```bash
+    curl -i -X POST http://localhost:8080/todos \
+      -H "Content-Type: application/json" \
+      -d '{"title":"Something else","completed":false}'
+    ```
+
+- **`GET /__admin/mappings`** — lists every stub currently loaded, useful to confirm a mapping file was picked up at all.
+- **`GET /__admin/requests/unmatched`** — the journal of requests WireMock received but couldn't match to any stub, including their raw body. Handy when you don't know what was actually sent (e.g. from a CI log) rather than reproducing by hand. It accumulates for the container's lifetime; clear it with `POST /__admin/requests/reset`.
+- **`Matched-Stub-Id` response header** — present on every successful (matched) response; identifies which mapping answered, useful when several stubs could plausibly overlap.
+
+There is no bundled visual UI in the open-source `wiremock/wiremock` Docker image (`/__admin/webapp` doesn't exist) — the admin endpoints above are plain JSON, readable directly in a browser, via `curl`, or through a REST client like Postman.
+
 ---
 
 For step-by-step guidance when writing new tests, use:
