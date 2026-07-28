@@ -1,4 +1,4 @@
-import type { SchemaObject } from 'ajv';
+import type { SchemaObject } from '@jirivondra/chronos-test-toolkit-api-ts';
 
 export const todoSchema: SchemaObject = {
     type: 'object',
