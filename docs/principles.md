@@ -88,7 +88,7 @@ export const restTestData = {
 **Dynamic vs. static data:**
 
 - Use `faker` for REST data where values must be unique across runs (titles, descriptions)
-- Use static values for SOAP data where results must be deterministic (mathematical inputs and expected outputs)
+- Use static values for SOAP data where results must be deterministic (mathematical inputs and expected outputs), and for WireMock-backed mock REST data, where the request must exactly match a pre-defined stub
 
 **Smoke tests** reference the first item from regression cases (`cases[0]`) rather than maintaining a separate copy of the same data.
 

@@ -6,7 +6,7 @@ Tests are composed from five shared layers plus the test files themselves:
 
 - **testData/** — all test input values and expected results. Never define data inline in test files.
 - **config/** — named constants for URLs, HTTP status codes, and SOAP operations. Never use raw strings or numbers in tests.
-- **helpers/** — thin project-local wiring (`makeRequest`, `makeSoapRequest`) around `@jirivondra/chronos-test-toolkit-api-ts`, which owns the actual HTTP/SOAP client logic and response wrappers (`ApiResponse`, `SoapResponse`).
+- **helpers/** — thin project-local wiring (`makeRequest`, `makeSoapRequest`, `makeMockRequest`) around `@jirivondra/chronos-test-toolkit-api-ts`, which owns the actual HTTP/SOAP client logic and response wrappers (`ApiResponse`, `SoapResponse`).
 - **schemas/** — response body shape definitions used for JSON validation.
 - **types/** — TypeScript interfaces for domain entities.
 
@@ -29,6 +29,7 @@ All test input data lives in `testData/`, one file per protocol:
 
 - `restTestData.ts` — organized by endpoint (`postTodo`, `putTodo`, …), with scenario keys within (`valid`, `create`, `update`, `invalidDescription`). Dynamic values use `faker`.
 - `soapTestData.ts` — organized by operation (`add`, `subtract`, …). Shared invalid-input cases live under `common`. Values are static for deterministic results.
+- `mockTestData.ts` — organized by endpoint (`postTodo`, `putTodo`, `deleteTodo`). Values are static, mirroring `soapTestData.ts`'s reasoning: WireMock matches requests by their exact literal content, so a `faker`-generated body would never hit a stub.
 
 Test files import the named export and never define data inline:
 
@@ -80,6 +81,20 @@ One file per endpoint or operation. Each `it` block covers exactly one scenario.
 ## Smoke tests
 
 One file per flow. Sequential `it` blocks share state via a `let` variable in the `describe` scope. Only the status code is asserted — detailed validation belongs in regression tests.
+
+## Mock tests (WireMock)
+
+One file per mutating endpoint (POST/PUT/DELETE), living in `test/rest/mock/`. Instead of `makeRequest`, tests import `makeMockRequest`, which points at a local WireMock instance (`WIREMOCK_URL`) instead of `BASE_URL`:
+
+```ts
+import { post } from '../../../helpers/makeMockRequest';
+import { mockTestData } from '../../../testData/mockTestData';
+
+const response = await post(todoUrls.todos.base, mockTestData.postTodo.valid);
+response.expectStatus(HTTP_STATUS.CREATED).expectJsonSchema(todoSchema);
+```
+
+The request body must exactly match what's configured in the corresponding `wiremock/mappings/*.json` stub, which is why `mockTestData.ts` uses static values instead of `faker`. Since WireMock never persists anything, these tests need no `before`/`after` cleanup — there's nothing created to delete. `task test-mock` (or `npm run test:mock`) starts the WireMock container from `docker-compose.yml`, runs the tests, and stops the container again — no manual setup step required.
 
 ---
 

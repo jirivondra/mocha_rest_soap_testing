@@ -56,6 +56,26 @@ tasks:
         deps: [build]
         cmd: npx mocha --spec 'dist/test/soap/smoke/**/*.spec.js'
 
+    test-mock:
+        aliases: [tm]
+        desc: Run REST mock tests (WireMock) — starts and stops the container automatically
+        deps: [build]
+        cmds:
+            - task: wiremock-up
+            - defer: { task: wiremock-down }
+            - cmd: npx mocha --spec 'dist/test/rest/mock/**/*.spec.js'
+
+    # --- WireMock ---
+    wiremock-up:
+        desc: Start the WireMock container and wait until it's ready
+        cmds:
+            - docker compose up -d wiremock
+            - until curl -sf http://localhost:8080/__admin/mappings > /dev/null; do sleep 0.5; done
+
+    wiremock-down:
+        desc: Stop the WireMock container
+        cmd: docker compose down
+
     # --- Code quality ---
     lint:
         aliases: [l]

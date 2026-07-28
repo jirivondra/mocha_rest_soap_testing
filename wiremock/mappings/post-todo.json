@@ -1,0 +1,12 @@
+{
+    "request": {
+        "method": "POST",
+        "urlPath": "/todos",
+        "bodyPatterns": [{ "equalToJson": "{\"title\":\"Mock todo title\",\"completed\":false}" }]
+    },
+    "response": {
+        "status": 201,
+        "jsonBody": { "id": 1, "title": "Mock todo title", "completed": false },
+        "headers": { "Content-Type": "application/json" }
+    }
+}
