@@ -4,12 +4,10 @@ Automated tests for REST API and SOAP services using the Mocha framework.
 
 ## Libraries
 
-| Library                                      | Version | Purpose                       |
-| -------------------------------------------- | ------- | ----------------------------- |
+| Library                                                                                  | Version | Purpose                                        |
+| ----------------------------------------------------------------------------------------- | ------- | ----------------------------------------------- |
+| [@jirivondra/chronos-test-toolkit-api-ts](https://github.com/jirivondra/chronos-test-toolkit-api-ts) | ^0.1    | Shared HTTP/SOAP client helpers, response wrappers (brings axios/chai/ajv/soap transitively) |
 | [mocha](https://mochajs.org)                 | ^11     | Test framework                |
-| [chai](https://www.chaijs.com)               | ^6      | Assertion library             |
-| [axios](https://axios-http.com)              | ^1      | HTTP client for API calls     |
-| [soap](https://github.com/vpulim/node-soap)  | ^1      | SOAP service client           |
 | [dotenv](https://github.com/motdotla/dotenv) | ^17     | Loading variables from `.env` |
 | [typescript](https://www.typescriptlang.org) | ^6      | TypeScript support            |
 | [ts-node](https://typestrong.org/ts-node)    | ^10     | Running TypeScript files      |
@@ -17,6 +15,15 @@ Automated tests for REST API and SOAP services using the Mocha framework.
 | [@faker-js/faker](https://fakerjs.dev)       | ^10     | Dynamic test data generation  |
 
 ## Installation
+
+`@jirivondra/chronos-test-toolkit-api-ts` is published to GitHub Packages. Add a personal access token
+(`read:packages` scope) to your global `~/.npmrc`:
+
+```
+//npm.pkg.github.com/:_authToken=<your-token>
+```
+
+Then:
 
 ```bash
 npm install
@@ -92,7 +99,7 @@ task format-check # check formatting (CI)       (alias: fc)
 ```
 config/           # constants and static configuration
 docs/             # project documentation
-helpers/          # shared helpers (HTTP client, ApiResponse, SOAP client)
+helpers/          # thin wiring around @jirivondra/chronos-test-toolkit-api-ts
 schemas/          # schema definitions for response validation
 testData/         # centralized test input data, one file per protocol
 types/            # TypeScript interfaces
@@ -105,11 +112,24 @@ test/
     smoke/        # SOAP smoke tests (basic functional verification)
 ```
 
+## Git Workflow
+
+Branches must be named `<type>/<description>` (Conventional Commits types: `feat`, `fix`, `refactor`,
+`chore`, `docs`, `test`, `ci`, `build`, `perf`, `style`) — e.g. `feat/due-date-coverage`. Full
+convention: [chronos-testing-principles/docs/git-workflow.md](https://github.com/jirivondra/chronos-testing-principles/blob/main/docs/git-workflow.md).
+
+Enforced locally via a `prepare-commit-msg` hook (rejects invalid branch names, auto-prefixes commit
+messages with the branch's type). Install once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ## Constants
 
 ### HTTP_STATUS (`config/httpStatus.ts`)
 
-All expected HTTP status codes are defined as named constants. Use these instead of hardcoded numbers in tests.
+All expected HTTP status codes are defined as named constants, re-exported from `@jirivondra/chronos-test-toolkit-api-ts`. Use these instead of hardcoded numbers in tests.
 
 | Constant                            | Value |
 | ----------------------------------- | ----- |
