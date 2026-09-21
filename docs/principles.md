@@ -39,7 +39,7 @@ Each `it` block follows the AAA pattern in a fixed order:
 ```ts
 // Arrange (testData imported from testData/, before() created the resource)
 // Act
-const response = await get(todoUrls.byId(todoId));
+const response = await get(todoUrls.todoById.valid(this.todoId));
 // Assert
 response.expectStatus(HTTP_STATUS.OK).expectJsonSchema(todoSchema);
 ```

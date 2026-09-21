@@ -5,24 +5,22 @@ import { todoUrls } from '../../../config/urls';
 import { restTestData } from '../../../testData/restTestData';
 
 describe('DELETE /todos/{id}', function () {
-    let todoId: number;
-
     beforeEach(async function () {
         const response = await post(todoUrls.todos.base, restTestData.deleteTodo.create);
-        todoId = (response.json as Todo).id;
+        this.todoId = (response.json as Todo).id;
     });
 
     afterEach(async function () {
-        await del(todoUrls.todoById.valid(todoId));
+        await del(todoUrls.todoById.valid(this.todoId));
     });
 
     it('Test for DELETE - 204', async function () {
-        const response = await del(todoUrls.todoById.valid(todoId));
+        const response = await del(todoUrls.todoById.valid(this.todoId));
         response.expectStatus(HTTP_STATUS.NO_CONTENT);
     });
 
     it('Test for DELETE - 401', async function () {
-        const response = await del(todoUrls.todoById.valid(todoId), false);
+        const response = await del(todoUrls.todoById.valid(this.todoId), false);
         response.expectStatus(HTTP_STATUS.UNAUTHORIZED);
     });
 

@@ -78,9 +78,23 @@ Each `forEach` iteration is still a single independent `it` block — the same r
 
 One file per endpoint or operation. Each `it` block covers exactly one scenario. Resources created during a test are cleaned up in `after`.
 
+## Shared state via `this` vs variables
+
+The Mocha context (`this`) belongs to one `describe` and its nested `describe`s — it is never shared between files. What goes where depends on **when the value becomes known**:
+
+| Value                                                                                                        | Where                                                 |
+| ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| Used by a single test (`response`, data destructured from `testData/`)                                       | `const` inside the `it`                               |
+| Known only at runtime and read by other hooks or tests (id of a created resource, result of a previous step) | `this.xyz`, set in a hook or in the flow's first `it` |
+| Known when the file loads and shared by several tests                                                        | `const` in the `describe` scope                       |
+
+Never declare a `let` in the `describe` scope to pass state between hooks and tests — use `this` (`this.todoId = ...` in `before`/`beforeEach`, read as `this.todoId` in `it`/`after`). This is also why every `describe`/`it`/hook uses `function () {}`: in an arrow function `this` is not the Mocha context.
+
+Every `this` property is declared once in `types/mocha.ts`, which augments `Mocha.Context`, so `this.todoId` is typed `number` instead of `any`. Add a property there when a new test needs one.
+
 ## Smoke tests
 
-One file per flow. Sequential `it` blocks share state via a `let` variable in the `describe` scope. Only the status code is asserted — detailed validation belongs in regression tests.
+One file per flow. Sequential `it` blocks share state via the Mocha context (see [Shared state via `this` vs variables](#shared-state-via-this-vs-variables)). Only the status code is asserted — detailed validation belongs in regression tests.
 
 ## Mock tests (WireMock)
 

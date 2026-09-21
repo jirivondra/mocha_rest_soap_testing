@@ -63,6 +63,7 @@ Schema definitions used by `ApiResponse.expectJsonSchema()` to validate response
 TypeScript interfaces for domain entities used in tests and helpers.
 
 - `todo.ts` — `Todo` interface (id, title, completed, …).
+- `mocha.ts` — augments `Mocha.Context` with the typed properties tests share through `this` (`todoId`, `result`, …).
 
 ## wiremock/
 
