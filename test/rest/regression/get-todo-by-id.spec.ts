@@ -6,24 +6,22 @@ import { todoUrls } from '../../../config/urls';
 import { restTestData } from '../../../testData/restTestData';
 
 describe('GET /todos/{id}', function () {
-    let todoId: number;
-
     before(async function () {
         const response = await post(todoUrls.todos.base, restTestData.getTodoById.create);
-        todoId = (response.json as Todo).id;
+        this.todoId = (response.json as Todo).id;
     });
 
     after(async function () {
-        await del(todoUrls.todoById.valid(todoId));
+        await del(todoUrls.todoById.valid(this.todoId));
     });
 
     it('Test for GET - 200', async function () {
-        const response = await get(todoUrls.todoById.valid(todoId));
+        const response = await get(todoUrls.todoById.valid(this.todoId));
         response.expectStatus(HTTP_STATUS.OK).expectJsonSchema(todoSchema);
     });
 
     it('Test for GET - 401', async function () {
-        const response = await get(todoUrls.todoById.valid(todoId), false);
+        const response = await get(todoUrls.todoById.valid(this.todoId), false);
         response.expectStatus(HTTP_STATUS.UNAUTHORIZED);
     });
 

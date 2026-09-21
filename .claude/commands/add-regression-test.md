@@ -40,16 +40,14 @@ import { $resourceUrls } from '../../../config/urls';
 import { restTestData } from '../../../testData/restTestData';
 
 describe('$METHOD /$resource', function () {
-  let resourceId: number; // only if cleanup is needed
-
   after(async function () {              // only if a resource was created
-    await del($resourceUrls.byId(resourceId));
+    await del($resourceUrls.byId(this.resourceId));
   });
 
   it('Test for $METHOD - $STATUS_CODE', async function () {
     const response = await $method($resourceUrls.$url, restTestData.$endpoint.$scenario, $authenticated?);
     // if you need the id from the response:
-    // resourceId = (response.json as $Type).id;
+    // this.resourceId = (response.json as $Type).id;
     response
       .expectStatus(HTTP_STATUS.$STATUS)
       .expectJsonSchema($schema); // omit if no body validation
@@ -67,4 +65,5 @@ describe('$METHOD /$resource', function () {
 - All input values belong in `testData/restTestData.ts` — never inline in the test file.
 - Pass `false` as the last argument to `get`/`post`/`put`/`del` for unauthenticated requests (401 cases).
 - Cleanup with `after`, not `afterEach` — runs once after the whole suite.
+- Share state (e.g. the created id) via `this.resourceId`, never a `let` in the `describe` scope. Declare the property in `types/mocha.ts`.
 - Only validate the schema on success responses (2xx). Error responses need only `expectStatus`.

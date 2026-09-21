@@ -38,11 +38,9 @@ import { $resourceUrls } from '../../../config/urls';
 import { restTestData } from '../../../testData/restTestData';
 
 describe('Smoke - $Resource flow', function () {
-    let resourceId: number; // shared state passed between steps
-
     it('POST /$resource - 201', async function () {
         const response = await post($resourceUrls.base, restTestData.smoke.create);
-        resourceId = (response.json as $Type).id;
+        this.resourceId = (response.json as $Type).id;
         response.expectStatus(HTTP_STATUS.CREATED);
     });
 
@@ -52,17 +50,17 @@ describe('Smoke - $Resource flow', function () {
     });
 
     it('GET /$resource/:id - 200', async function () {
-        const response = await get($resourceUrls.byId(resourceId));
+        const response = await get($resourceUrls.byId(this.resourceId));
         response.expectStatus(HTTP_STATUS.OK);
     });
 
     it('PUT /$resource/:id - 200', async function () {
-        const response = await put($resourceUrls.byId(resourceId), restTestData.smoke.update);
+        const response = await put($resourceUrls.byId(this.resourceId), restTestData.smoke.update);
         response.expectStatus(HTTP_STATUS.OK);
     });
 
     it('DELETE /$resource/:id - 204', async function () {
-        const response = await del($resourceUrls.byId(resourceId));
+        const response = await del($resourceUrls.byId(this.resourceId));
         response.expectStatus(HTTP_STATUS.NO_CONTENT);
     });
 });
@@ -71,7 +69,7 @@ describe('Smoke - $Resource flow', function () {
 ## Rules to follow
 
 - Assert **only the status code** — detailed body validation belongs in regression tests.
-- Shared state (e.g. `resourceId`) is declared with `let` in the `describe` scope and set in the first `it`.
+- Shared state (e.g. `this.resourceId`) is set on the Mocha context in the first `it` and declared in `types/mocha.ts`. Never use a `let` in the `describe` scope.
 - Steps are sequential and intentionally depend on each other — this is the nature of a flow test.
 - Use `HTTP_STATUS.*` constants — never raw numbers.
 - Use `$resourceUrls.*` constants — never raw strings.
