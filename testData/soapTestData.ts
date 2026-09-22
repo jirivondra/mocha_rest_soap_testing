@@ -5,7 +5,7 @@ export const soapTestData = {
             { a: '!@#', b: 1, description: 'special characters' },
             { a: '', b: 1, description: 'empty string' },
         ],
-        invalidTypeFault: "is not a valid value of the atomic type 'xs:float'",
+        invalidTypeFault: "is not a valid value of the atomic type 'xs:double'",
     },
     add: {
         cases: [
